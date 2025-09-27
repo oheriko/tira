@@ -42,7 +42,7 @@ echo
 
 # Set installation directory
 INSTALL_DIR="/usr/local/bin"
-if [ ! -w "$INSTALL_DIR" ] && [ "$EUID" -ne 0 ]; then
+if [ ! -w "$INSTALL_DIR" ] && [ "$(id -u)" -ne 0 ]; then
     echo "⚠️  $INSTALL_DIR is not writable. Trying with sudo..."
     SUDO="sudo"
 else
