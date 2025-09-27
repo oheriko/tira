@@ -13,19 +13,49 @@ Install Tira:
 curl -fsSL https://tira.sh | sh
 ```
 
-Use Tira to manage any installation:
+That's it! Tira installs itself and tracks its own installation. See what you have:
+
 ```bash
-# Instead of: curl -fsSL https://ollama.com/install.sh | sh
-tira install https://ollama.com/install.sh
-
-# List what's installed
 tira list
+```
+```
+📦 Installed packages (1):
+  📦 tira installed-20250927-103630
+     Package installed from https://tira.sh/install.sh
+     🔗 https://tira.sh/install.sh
+     📅 Installed 2 minutes ago (2025-09-27 10:36)
+     🏷️  unknown
+```
 
-# Rollback if needed
-tira rollback ollama
+Now manage any curl | bash installation with full tracking:
+```bash
+# Install with confidence - Tira tracks everything
+tira install https://ollama.com/install.sh
+tira install https://get.docker.com
+tira install https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.3/install.sh
 
-# Upgrade everything
-tira upgrade
+# See your complete software inventory
+tira list
+```
+```
+📦 Installed packages (3):
+  📦 docker installed-20250927-104809
+     Container runtime platform
+     🔗 https://get.docker.com
+     📅 Installed 5 minutes ago (2025-09-27 10:48)
+     🏷️  containers, development, devops
+
+  📦 ollama installed-20250927-105307
+     Large language model runner
+     🔗 https://ollama.com/install.sh
+     📅 Installed just now (2025-09-27 10:53)
+     🏷️  ai, gpu, development, llm
+
+  📦 tira installed-20250927-103630
+     Package installed from https://tira.sh/install.sh
+     🔗 https://tira.sh/install.sh
+     📅 Installed 16 minutes ago (2025-09-27 10:36)
+     🏷️  unknown
 ```
 
 ## Why Tira?
