@@ -99,7 +99,9 @@ echo
 
 # The meta moment - have Tira track its own installation!
 echo "🔄 Registering Tira installation with itself..."
-if tira install https://tira.sh/install.sh --name tira 2>/dev/null; then
+if [ "${TIRA_INSTALLING:-}" = "true" ]; then
+    echo "✅ Tira self-installation registered (nested execution)!"
+elif tira install https://tira.sh/install.sh --name tira 2>/dev/null; then
     echo "✅ Tira is now tracking its own installation!"
 else
     echo "⚠️  Could not register self-installation (this is normal for first-time setup)"

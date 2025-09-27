@@ -183,14 +183,33 @@ func (i *Installer) executeScript(scriptContent []byte) (string, error) {
 	}
 	tmpFile.Close()
 
-	// Execute script
-	cmd := exec.Command("/bin/bash", tmpFile.Name())
-	cmd.Stdout = os.Stdout
-	cmd.Stderr = os.Stderr
-	cmd.Stdin = os.Stdin
+	// Check if this is a self-installation to prevent recursion
+	if strings.Contains(string(scriptContent), "tira install") &&
+		strings.Contains(string(scriptContent), "tira.sh") {
+		fmt.Printf("   🔄 Self-installation detected - executing in safe mode\n")
 
-	if err := cmd.Run(); err != nil {
-		return "", fmt.Errorf("script execution failed: %w", err)
+		// Set environment variable to prevent nested self-installs
+		cmd := exec.Command("/bin/bash", tmpFile.Name())
+		cmd.Env = append(os.Environ(), "TIRA_INSTALLING=true")
+		cmd.Stdout = os.Stdout
+		cmd.Stderr = os.Stderr
+
+		// Don't inherit stdin for self-install scripts
+		cmd.Stdin = nil
+
+		if err := cmd.Run(); err != nil {
+			return "", fmt.Errorf("script execution failed: %w", err)
+		}
+	} else {
+		// Normal script execution with full stdin/stdout
+		cmd := exec.Command("/bin/bash", tmpFile.Name())
+		cmd.Stdout = os.Stdout
+		cmd.Stderr = os.Stderr
+		cmd.Stdin = os.Stdin
+
+		if err := cmd.Run(); err != nil {
+			return "", fmt.Errorf("script execution failed: %w", err)
+		}
 	}
 
 	// For now, return a simple version based on timestamp
