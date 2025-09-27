@@ -8,6 +8,7 @@ import (
 	"os"
 
 	"github.com/oheriko/tira/internal/config"
+	"github.com/oheriko/tira/internal/installer"
 	"github.com/spf13/cobra"
 )
 
@@ -40,7 +41,7 @@ func init() {
 
 func installHandler(cmd *cobra.Command, args []string) {
 	// Load config
-	cfg, err := config.Load()
+	cfgWithOverrides, err := config.Load()
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "❌ Error loading config: %v\n", err)
 		os.Exit(1)
@@ -54,7 +55,7 @@ func installHandler(cmd *cobra.Command, args []string) {
 	customName, _ := cmd.Flags().GetString("name")
 
 	// Get effective config for this script
-	scriptConfig := cfg.GetScriptConfig(url)
+	scriptConfig := cfgWithOverrides.GetScriptConfig(url)
 
 	// Override with command line flags
 	if cache != "" {
@@ -64,48 +65,43 @@ func installHandler(cmd *cobra.Command, args []string) {
 		scriptConfig.UI.ConfirmInstalls = false
 	}
 
-	// Show what we're doing
-	if dryRun {
-		fmt.Printf("🔍 Dry run - would install from %s\n", url)
-	} else {
-		fmt.Printf("🔽 Installing from %s\n", url)
-	}
-
-	// Display configuration being used
+	// Display configuration being used if verbose
 	if cmd.Flag("verbose").Changed || scriptConfig.UI.Verbose {
-		fmt.Printf("   📋 Configuration:\n")
-		fmt.Printf("      Cache strategy: %s\n", scriptConfig.Cache.Strategy)
-		fmt.Printf("      Cache TTL: %v\n", scriptConfig.Cache.TTL)
-		fmt.Printf("      HTTPS verification: %t\n", scriptConfig.Security.VerifyHTTPS)
-		fmt.Printf("      Prompt on changes: %t\n", scriptConfig.Security.PromptOnChange)
+		fmt.Printf("📋 Configuration:\n")
+		fmt.Printf("   Cache strategy: %s\n", scriptConfig.Cache.Strategy)
+		fmt.Printf("   Cache TTL: %v\n", scriptConfig.Cache.TTL)
+		fmt.Printf("   HTTPS verification: %t\n", scriptConfig.Security.VerifyHTTPS)
+		fmt.Printf("   Prompt on changes: %t\n", scriptConfig.Security.PromptOnChange)
 		if customName != "" {
-			fmt.Printf("      Custom name: %s\n", customName)
+			fmt.Printf("   Custom name: %s\n", customName)
 		}
 		if force {
-			fmt.Printf("      Force install: %t\n", force)
+			fmt.Printf("   Force install: %t\n", force)
 		}
 		if !scriptConfig.UI.ConfirmInstalls {
-			fmt.Printf("      Skip confirmations: %t\n", true)
+			fmt.Printf("   Skip confirmations: %t\n", true)
 		}
+		fmt.Println()
 	}
 
-	// TODO: Implement the actual installation logic:
-	// 1. Parse URL (handle @hash syntax for pinning)
-	// 2. Check if package already exists (unless --force)
-	// 3. Download script with HTTP client
-	// 4. Verify script (checksum, HTTPS, domain whitelist)
-	// 5. Cache script and calculate hash
-	// 6. Monitor filesystem before/after execution
-	// 7. Execute script in controlled environment
-	// 8. Detect installed files, services, environment changes
-	// 9. Save package metadata to database
-	// 10. Report success with rollback info
+	// Create installer
+	inst, err := installer.NewInstaller(scriptConfig)
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "❌ Error creating installer: %v\n", err)
+		os.Exit(1)
+	}
 
-	if !dryRun {
-		fmt.Printf("✅ Installation completed successfully\n")
-		fmt.Printf("   Use 'tira list' to see installed packages\n")
-		fmt.Printf("   Use 'tira rollback <package>' if you need to revert\n")
-	} else {
-		fmt.Printf("   💡 Run without --dry-run to perform actual installation\n")
+	// Prepare install options
+	opts := installer.InstallOptions{
+		URL:        url,
+		CustomName: customName,
+		Force:      force,
+		DryRun:     dryRun,
+	}
+
+	// Execute installation
+	if err := inst.Install(opts); err != nil {
+		fmt.Fprintf(os.Stderr, "❌ Installation failed: %v\n", err)
+		os.Exit(1)
 	}
 }
