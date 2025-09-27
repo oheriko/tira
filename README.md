@@ -120,7 +120,7 @@ curl -fsSL https://tira.sh | sh
 ```
 
 ### Manual Install
-1. Download the latest release from [GitHub Releases](https://github.com/yourusername/tira/releases)
+1. Download the latest release from [GitHub Releases](https://github.com/oheriko/tira/releases)
 2. Extract and move to your PATH:
    ```bash
    tar -xzf tira-linux-amd64.tar.gz
