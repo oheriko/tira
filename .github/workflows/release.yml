@@ -14,7 +14,7 @@ jobs:
           go-version: '1.25'
       - name: Update install script version
         run: |
-          sed -i 's/GITHUB_REPO=".*"/GITHUB_REPO="${{ github.repository }}"/' site/install.sh
+          sed -i 's|GITHUB_REPO=".*"|GITHUB_REPO="${{ github.repository }}"|' site/install.sh
       - name: Build binaries
         run: |
           # Linux
