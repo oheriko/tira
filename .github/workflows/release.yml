@@ -21,17 +21,17 @@ jobs:
           GOOS=linux GOARCH=amd64 go build -o tira-x86_64-linux
           GOOS=linux GOARCH=arm64 go build -o tira-aarch64-linux
           GOOS=linux GOARCH=386 go build -o tira-i686-linux
-
           # macOS
           GOOS=darwin GOARCH=amd64 go build -o tira-x86_64-darwin
           GOOS=darwin GOARCH=arm64 go build -o tira-aarch64-darwin
-
-          # Windows (might as well)
+          # Windows
           GOOS=windows GOARCH=amd64 go build -o tira-x86_64-windows.exe
           GOOS=windows GOARCH=arm64 go build -o tira-aarch64-windows.exe
+      - name: Create release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - name: Create release
-        uses: softprops/action-gh-release@v1
-        with:
-          files: tira-*
+        run: |
+          gh release create ${{ github.ref_name }} \
+            tira-* \
+            --title "Tira ${{ github.ref_name }}" \
+            --generate-notes
