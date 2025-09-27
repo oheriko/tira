@@ -74,11 +74,11 @@ func init() {
 func debugAddHandler(cmd *cobra.Command, args []string) {
 	db, err := database.NewDatabase()
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "❌ Error initializing database: %v\n", err)
+		fmt.Fprintf(os.Stderr, "ERROR: Failed to initialize database: %v\n", err)
 		os.Exit(1)
 	}
 
-	fmt.Println("🔧 Adding test packages to database...")
+	fmt.Println("ADDING: Test packages to database...")
 
 	// Test package 1: Ollama
 	pkg1 := &database.Package{
@@ -115,10 +115,10 @@ func debugAddHandler(cmd *cobra.Command, args []string) {
 	}
 
 	if err := db.SavePackage(pkg1); err != nil {
-		fmt.Fprintf(os.Stderr, "❌ Error saving ollama package: %v\n", err)
+		fmt.Fprintf(os.Stderr, "ERROR: Failed to save ollama package: %v\n", err)
 		os.Exit(1)
 	}
-	fmt.Println("   ✅ Added ollama v0.1.17")
+	fmt.Println("  ANCHORED: ollama v0.1.17")
 
 	// Test package 2: Docker
 	pkg2 := &database.Package{
@@ -162,10 +162,10 @@ func debugAddHandler(cmd *cobra.Command, args []string) {
 	}
 
 	if err := db.SavePackage(pkg2); err != nil {
-		fmt.Fprintf(os.Stderr, "❌ Error saving docker package: %v\n", err)
+		fmt.Fprintf(os.Stderr, "ERROR: Failed to save docker package: %v\n", err)
 		os.Exit(1)
 	}
-	fmt.Println("   ✅ Added docker v24.0.7")
+	fmt.Println("  ANCHORED: docker v24.0.7")
 
 	// Test package 3: NVM
 	pkg3 := &database.Package{
@@ -196,56 +196,56 @@ func debugAddHandler(cmd *cobra.Command, args []string) {
 	}
 
 	if err := db.SavePackage(pkg3); err != nil {
-		fmt.Fprintf(os.Stderr, "❌ Error saving nvm package: %v\n", err)
+		fmt.Fprintf(os.Stderr, "ERROR: Failed to save nvm package: %v\n", err)
 		os.Exit(1)
 	}
-	fmt.Println("   ✅ Added nvm v0.40.3")
+	fmt.Println("  ANCHORED: nvm v0.40.3")
 
-	fmt.Println("\n🎉 Test packages added successfully!")
-	fmt.Println("💡 Try: tira list --show-files --show-rollbacks")
+	fmt.Println("\nSUCCESS: Test packages added!")
+	fmt.Println("Try: tira list --show-files --show-rollbacks")
 }
 
 func debugStatsHandler(cmd *cobra.Command, args []string) {
 	db, err := database.NewDatabase()
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "❌ Error initializing database: %v\n", err)
+		fmt.Fprintf(os.Stderr, "ERROR: Failed to initialize database: %v\n", err)
 		os.Exit(1)
 	}
 
 	stats, err := db.GetStats()
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "❌ Error getting stats: %v\n", err)
+		fmt.Fprintf(os.Stderr, "ERROR: Failed to get stats: %v\n", err)
 		os.Exit(1)
 	}
 
-	fmt.Println("📊 Database Statistics:")
+	fmt.Println("DATABASE STATISTICS:")
 	for key, value := range stats {
-		fmt.Printf("   %s: %v\n", key, value)
+		fmt.Printf("  %s: %v\n", key, value)
 	}
 
 	// Additional system info
-	fmt.Println("\n🖥️  System Information:")
+	fmt.Println("\nSYSTEM INFORMATION:")
 
 	configPath, _ := config.ConfigPath()
 	if _, err := os.Stat(configPath); err == nil {
 		if info, err := os.Stat(configPath); err == nil {
-			fmt.Printf("   config_file_size: %d bytes\n", info.Size())
-			fmt.Printf("   config_modified: %s\n", info.ModTime().Format("2006-01-02 15:04:05"))
+			fmt.Printf("  config_file_size: %d bytes\n", info.Size())
+			fmt.Printf("  config_modified: %s\n", info.ModTime().Format("2006-01-02 15:04:05"))
 		}
 	}
 
 	dataPath, _ := config.DataPath()
 	if _, err := os.Stat(dataPath); err == nil {
-		fmt.Printf("   data_dir_size: calculating...\n")
+		fmt.Printf("  data_dir_size: calculating...\n")
 		if size, err := getDirSize(dataPath); err == nil {
-			fmt.Printf("   data_dir_size: %d bytes\n", size)
+			fmt.Printf("  data_dir_size: %d bytes\n", size)
 		}
 	}
 
 	cachePath, _ := config.CachePath()
 	if _, err := os.Stat(cachePath); err == nil {
 		if size, err := getDirSize(cachePath); err == nil {
-			fmt.Printf("   cache_dir_size: %d bytes\n", size)
+			fmt.Printf("  cache_dir_size: %d bytes\n", size)
 		}
 	}
 }
@@ -253,77 +253,77 @@ func debugStatsHandler(cmd *cobra.Command, args []string) {
 func debugCleanupHandler(cmd *cobra.Command, args []string) {
 	db, err := database.NewDatabase()
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "❌ Error initializing database: %v\n", err)
+		fmt.Fprintf(os.Stderr, "ERROR: Failed to initialize database: %v\n", err)
 		os.Exit(1)
 	}
 
-	fmt.Println("🧹 Cleaning up unused cached scripts...")
+	fmt.Println("CLEANUP: Removing unused cached scripts...")
 
 	if err := db.CleanupOldScripts(); err != nil {
-		fmt.Fprintf(os.Stderr, "❌ Error during cleanup: %v\n", err)
+		fmt.Fprintf(os.Stderr, "ERROR: Cleanup failed: %v\n", err)
 		os.Exit(1)
 	}
 
-	fmt.Println("✅ Cleanup completed")
+	fmt.Println("SUCCESS: Cleanup completed")
 }
 
 func debugPathsHandler(cmd *cobra.Command, args []string) {
-	fmt.Println("📁 Tira Directory Paths:")
+	fmt.Println("TIRA DIRECTORY PATHS:")
 
 	configPath, err := config.ConfigPath()
 	if err != nil {
-		fmt.Printf("   ❌ Config file: error - %v\n", err)
+		fmt.Printf("  ERROR: Config file - %v\n", err)
 	} else {
-		fmt.Printf("   📋 Config file: %s\n", configPath)
+		fmt.Printf("  Config file: %s\n", configPath)
 		if _, err := os.Stat(configPath); err == nil {
-			fmt.Printf("      ✅ exists\n")
+			fmt.Printf("    STATUS: exists\n")
 		} else {
-			fmt.Printf("      ❌ does not exist\n")
+			fmt.Printf("    STATUS: does not exist\n")
 		}
 	}
 
 	dataPath, err := config.DataPath()
 	if err != nil {
-		fmt.Printf("   ❌ Data directory: error - %v\n", err)
+		fmt.Printf("  ERROR: Data directory - %v\n", err)
 	} else {
-		fmt.Printf("   💾 Data directory: %s\n", dataPath)
+		fmt.Printf("  Data directory: %s\n", dataPath)
 		if _, err := os.Stat(dataPath); err == nil {
-			fmt.Printf("      ✅ exists\n")
+			fmt.Printf("    STATUS: exists\n")
 		} else {
-			fmt.Printf("      ❌ does not exist\n")
+			fmt.Printf("    STATUS: does not exist\n")
 		}
 	}
 
 	cachePath, err := config.CachePath()
 	if err != nil {
-		fmt.Printf("   ❌ Cache directory: error - %v\n", err)
+		fmt.Printf("  ERROR: Cache directory - %v\n", err)
 	} else {
-		fmt.Printf("   🗂️  Cache directory: %s\n", cachePath)
+		fmt.Printf("  Cache directory: %s\n", cachePath)
 		if _, err := os.Stat(cachePath); err == nil {
-			fmt.Printf("      ✅ exists\n")
+			fmt.Printf("    STATUS: exists\n")
 		} else {
-			fmt.Printf("      ❌ does not exist\n")
+			fmt.Printf("    STATUS: does not exist\n")
 		}
 	}
 
 	// Show subdirectories
-	fmt.Println("\n📂 Subdirectories:")
+	fmt.Println("\nSUBDIRECTORIES:")
 	if dataPath, err := config.DataPath(); err == nil {
 		packageDir := filepath.Join(dataPath, "packages")
 		scriptsDir := filepath.Join(dataPath, "scripts")
 
-		fmt.Printf("   📦 Packages: %s\n", packageDir)
+		fmt.Printf("  Packages: %s\n", packageDir)
 		if _, err := os.Stat(packageDir); err == nil {
-			fmt.Printf("      ✅ exists\n")
+			fmt.Printf("    STATUS: exists\n")
 		} else {
-			fmt.Printf("      ❌ does not exist\n")
+			fmt.Printf("    STATUS: does not exist\n")
 		}
 
-		fmt.Printf("   📜 Scripts: %s\n", scriptsDir)
+		fmt.Printf("  Scripts: %s\n", scriptsDir)
 		if _, err := os.Stat(scriptsDir); err == nil {
-			fmt.Printf("      ✅ exists\n")
+			fmt.Printf("    STATUS: exists\n")
 		} else {
-			fmt.Printf("      ❌ does not exist\n")
+			fmt.Printf("    STATUS: does not exist\n")
 		}
 	}
 }
@@ -332,41 +332,41 @@ func debugResetHandler(cmd *cobra.Command, args []string) {
 	confirm, _ := cmd.Flags().GetBool("confirm")
 
 	if !confirm {
-		fmt.Println("⚠️  This will remove ALL installed packages from the database.")
-		fmt.Println("   This does NOT uninstall the actual software from your system.")
-		fmt.Println("   To confirm, run: tira debug reset --confirm")
+		fmt.Println("WARNING: This will remove ALL installed packages from the database.")
+		fmt.Println("         This does NOT uninstall the actual software from your system.")
+		fmt.Println("         To confirm, run: tira debug reset --confirm")
 		return
 	}
 
 	db, err := database.NewDatabase()
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "❌ Error initializing database: %v\n", err)
+		fmt.Fprintf(os.Stderr, "ERROR: Failed to initialize database: %v\n", err)
 		os.Exit(1)
 	}
 
 	packages, err := db.ListPackages()
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "❌ Error listing packages: %v\n", err)
+		fmt.Fprintf(os.Stderr, "ERROR: Failed to list packages: %v\n", err)
 		os.Exit(1)
 	}
 
 	if len(packages) == 0 {
-		fmt.Println("📦 No packages to remove")
+		fmt.Println("NO PACKAGES TO REMOVE")
 		return
 	}
 
-	fmt.Printf("🗑️  Removing %d packages from database...\n", len(packages))
+	fmt.Printf("REMOVING: %d packages from database...\n", len(packages))
 
 	for _, pkg := range packages {
 		if err := db.DeletePackage(pkg.Name); err != nil {
-			fmt.Fprintf(os.Stderr, "❌ Error removing %s: %v\n", pkg.Name, err)
+			fmt.Fprintf(os.Stderr, "ERROR: Failed to remove %s: %v\n", pkg.Name, err)
 		} else {
-			fmt.Printf("   ✅ Removed %s\n", pkg.Name)
+			fmt.Printf("  REMOVED: %s\n", pkg.Name)
 		}
 	}
 
-	fmt.Println("✅ Database reset completed")
-	fmt.Println("💡 The actual software is still installed on your system")
+	fmt.Println("SUCCESS: Database reset completed")
+	fmt.Println("NOTE: The actual software is still installed on your system")
 }
 
 func getDirSize(path string) (int64, error) {

@@ -96,11 +96,11 @@ func init() {
 func configShowHandler(cmd *cobra.Command, args []string) {
 	cfg, err := config.Load()
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "❌ Error loading config: %v\n", err)
+		fmt.Fprintf(os.Stderr, "ERROR: Failed to load config: %v\n", err)
 		os.Exit(1)
 	}
 
-	fmt.Println("📋 Current Tira configuration:")
+	fmt.Println("CURRENT TIRA CONFIGURATION:")
 
 	fmt.Printf("\n[cache]\n")
 	fmt.Printf("strategy = %q\n", cfg.Cache.Strategy)
@@ -148,7 +148,7 @@ func configShowHandler(cmd *cobra.Command, args []string) {
 	}
 
 	configPath, _ := config.ConfigPath()
-	fmt.Printf("\n📁 Config file: %s\n", configPath)
+	fmt.Printf("\nConfig file: %s\n", configPath)
 }
 
 func configSetHandler(cmd *cobra.Command, args []string) {
@@ -157,14 +157,14 @@ func configSetHandler(cmd *cobra.Command, args []string) {
 
 	cfg, err := config.Load()
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "❌ Error loading config: %v\n", err)
+		fmt.Fprintf(os.Stderr, "ERROR: Failed to load config: %v\n", err)
 		os.Exit(1)
 	}
 
 	// Parse key using dot notation
 	parts := strings.Split(key, ".")
 	if len(parts) != 2 {
-		fmt.Fprintf(os.Stderr, "❌ Error: key must be in format 'section.key'\n")
+		fmt.Fprintf(os.Stderr, "ERROR: key must be in format 'section.key'\n")
 		fmt.Fprintf(os.Stderr, "   Example: cache.strategy, ui.show_hashes\n")
 		os.Exit(1)
 	}
@@ -173,23 +173,23 @@ func configSetHandler(cmd *cobra.Command, args []string) {
 
 	// Set the value based on section and key
 	if err := setConfigValue(cfg, section, keyName, value); err != nil {
-		fmt.Fprintf(os.Stderr, "❌ Error: %v\n", err)
+		fmt.Fprintf(os.Stderr, "ERROR: %v\n", err)
 		os.Exit(1)
 	}
 
 	// Validate config
 	if err := cfg.Config.Validate(); err != nil {
-		fmt.Fprintf(os.Stderr, "❌ Error: invalid config value: %v\n", err)
+		fmt.Fprintf(os.Stderr, "ERROR: invalid config value: %v\n", err)
 		os.Exit(1)
 	}
 
 	// Save config
 	if err := cfg.Save(); err != nil {
-		fmt.Fprintf(os.Stderr, "❌ Error saving config: %v\n", err)
+		fmt.Fprintf(os.Stderr, "ERROR: Failed to save config: %v\n", err)
 		os.Exit(1)
 	}
 
-	fmt.Printf("✅ Set %s = %s\n", key, value)
+	fmt.Printf("UPDATED: %s = %s\n", key, value)
 }
 
 func configGetHandler(cmd *cobra.Command, args []string) {
@@ -197,13 +197,13 @@ func configGetHandler(cmd *cobra.Command, args []string) {
 
 	cfg, err := config.Load()
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "❌ Error loading config: %v\n", err)
+		fmt.Fprintf(os.Stderr, "ERROR: Failed to load config: %v\n", err)
 		os.Exit(1)
 	}
 
 	value, err := getConfigValue(cfg, key)
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "❌ Error: %v\n", err)
+		fmt.Fprintf(os.Stderr, "ERROR: %v\n", err)
 		os.Exit(1)
 	}
 
@@ -213,7 +213,7 @@ func configGetHandler(cmd *cobra.Command, args []string) {
 func configEditHandler(cmd *cobra.Command, args []string) {
 	configPath, err := config.ConfigPath()
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "❌ Error getting config path: %v\n", err)
+		fmt.Fprintf(os.Stderr, "ERROR: Failed to get config path: %v\n", err)
 		os.Exit(1)
 	}
 
@@ -224,10 +224,10 @@ func configEditHandler(cmd *cobra.Command, args []string) {
 			Scripts: make(map[string]config.ScriptOverride),
 		}
 		if err := cfg.Save(); err != nil {
-			fmt.Fprintf(os.Stderr, "❌ Error creating config file: %v\n", err)
+			fmt.Fprintf(os.Stderr, "ERROR: Failed to create config file: %v\n", err)
 			os.Exit(1)
 		}
-		fmt.Printf("✅ Created new config file\n")
+		fmt.Printf("CREATED: New config file\n")
 	}
 
 	// Get editor from environment
@@ -244,13 +244,13 @@ func configEditHandler(cmd *cobra.Command, args []string) {
 	}
 
 	if editor == "" {
-		fmt.Fprintf(os.Stderr, "❌ No editor found. Set $EDITOR environment variable.\n")
+		fmt.Fprintf(os.Stderr, "ERROR: No editor found. Set $EDITOR environment variable.\n")
 		fmt.Fprintf(os.Stderr, "   Example: export EDITOR=nano\n")
-		fmt.Printf("📁 Config file location: %s\n", configPath)
+		fmt.Printf("Config file location: %s\n", configPath)
 		os.Exit(1)
 	}
 
-	fmt.Printf("📝 Opening config file in %s...\n", editor)
+	fmt.Printf("OPENING: Config file in %s...\n", editor)
 
 	// Execute editor
 	editorCmd := exec.Command(editor, configPath)
@@ -259,17 +259,17 @@ func configEditHandler(cmd *cobra.Command, args []string) {
 	editorCmd.Stderr = os.Stderr
 
 	if err := editorCmd.Run(); err != nil {
-		fmt.Fprintf(os.Stderr, "❌ Error running editor: %v\n", err)
+		fmt.Fprintf(os.Stderr, "ERROR: Failed to run editor: %v\n", err)
 		os.Exit(1)
 	}
 
-	fmt.Printf("✅ Config file updated\n")
+	fmt.Printf("UPDATED: Config file saved\n")
 }
 
 func configPathHandler(cmd *cobra.Command, args []string) {
 	configPath, err := config.ConfigPath()
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "❌ Error getting config path: %v\n", err)
+		fmt.Fprintf(os.Stderr, "ERROR: Failed to get config path: %v\n", err)
 		os.Exit(1)
 	}
 

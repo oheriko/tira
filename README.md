@@ -1,4 +1,4 @@
-# Tira 👑
+# Tira
 > Universal package manager for the curl | bash era
 
 Tira is a universal package manager that brings version control and
@@ -19,12 +19,12 @@ That's it! Tira installs itself and tracks its own installation. See what you ha
 tira list
 ```
 ```
-📦 Installed packages (1):
-  📦 tira installed-20250927-103630
-     Package installed from https://tira.sh/install.sh
-     🔗 https://tira.sh/install.sh
-     📅 Installed 2 minutes ago (2025-09-27 10:36)
-     🏷️  unknown
+INSTALLED PACKAGES (1):
+  ▓ tira installed-20250927-103630
+    └─ Package installed from https://tira.sh/install.sh
+    └─ https://tira.sh/install.sh
+    └─ Installed 2 minutes ago (2025-09-27 10:36)
+    └─ unknown
 ```
 
 Now manage any curl | bash installation with full tracking:
@@ -38,33 +38,33 @@ tira install https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.3/install.sh
 tira list
 ```
 ```
-📦 Installed packages (3):
-  📦 docker installed-20250927-104809
-     Container runtime platform
-     🔗 https://get.docker.com
-     📅 Installed 5 minutes ago (2025-09-27 10:48)
-     🏷️  containers, development, devops
+INSTALLED PACKAGES (3):
+  ▓ docker installed-20250927-104809
+    └─ Container runtime platform
+    └─ https://get.docker.com
+    └─ Installed 5 minutes ago (2025-09-27 10:48)
+    └─ containers, development, devops
 
-  📦 ollama installed-20250927-105307
-     Large language model runner
-     🔗 https://ollama.com/install.sh
-     📅 Installed just now (2025-09-27 10:53)
-     🏷️  ai, gpu, development, llm
+  ▓ ollama installed-20250927-105307
+    └─ Large language model runner
+    └─ https://ollama.com/install.sh
+    └─ Installed just now (2025-09-27 10:53)
+    └─ ai, gpu, development, llm
 
-  📦 tira installed-20250927-103630
-     Package installed from https://tira.sh/install.sh
-     🔗 https://tira.sh/install.sh
-     📅 Installed 16 minutes ago (2025-09-27 10:36)
-     🏷️  unknown
+  ▓ tira installed-20250927-103630
+    └─ Package installed from https://tira.sh/install.sh
+    └─ https://tira.sh/install.sh
+    └─ Installed 16 minutes ago (2025-09-27 10:36)
+    └─ unknown
 ```
 
 ## Why Tira?
 
-- **📦 Version tracking** - Know exactly what version of each script you ran
-- **🔄 Safe rollbacks** - Go back to previous versions if something breaks
-- **🔍 Filesystem monitoring** - Track what files each script touched
-- **⚡ Zero friction** - Works with any existing curl | bash script
-- **🛡️ Script verification** - Detect when upstream scripts change
+- **Version tracking** - Know exactly what version of each script you ran
+- **Safe rollbacks** - Go back to previous versions if something breaks
+- **Filesystem monitoring** - Track what files each script touched
+- **Zero friction** - Works with any existing curl | bash script
+- **Script verification** - Detect when upstream scripts change
 
 ## Features
 
@@ -164,6 +164,3 @@ We love contributions! See [CONTRIBUTING.md](CONTRIBUTING.md) for details.
 
 MIT License - see [LICENSE](LICENSE) for details.
 
----
-
-*Rule your installs* 👑

@@ -17,15 +17,13 @@ var version = "dev" // Set by build process
 var rootCmd = &cobra.Command{
 	Use:   "tira",
 	Short: "Universal package manager for the curl | bash era",
-	Long: `Tira 👑
+	Long: `Tira ⚓
 Universal package manager for the curl | bash era
 
 Tira brings version control and rollback capabilities to curl | bash
 installation scripts. Install Ollama, Docker, NVM, Nix, or any
 script-based tool with confidence, knowing you can always roll back
-if something breaks.
-
-Rule your installs 👑`,
+if something breaks.`,
 	Version: version,
 }
 

@@ -45,7 +45,7 @@ type InstallOptions struct {
 
 // Install downloads and executes a script, tracking it in the database
 func (i *Installer) Install(opts InstallOptions) error {
-	fmt.Printf("🔽 Installing from %s\n", opts.URL)
+	fmt.Printf("DOWNLOADING: %s\n", opts.URL)
 
 	// 1. Derive package name
 	packageName := opts.CustomName
@@ -59,36 +59,36 @@ func (i *Installer) Install(opts InstallOptions) error {
 	}
 
 	// 3. Download script
-	fmt.Printf("   📥 Downloading script...\n")
+	fmt.Printf("  FETCHING: Script content...\n")
 	scriptContent, err := i.downloadScript(opts.URL)
 	if err != nil {
 		return fmt.Errorf("failed to download script: %w", err)
 	}
 
 	// 4. Calculate hash and cache script
-	fmt.Printf("   🔐 Calculating hash...\n")
+	fmt.Printf("  HASHING: Calculating script hash...\n")
 	scriptHash, err := i.db.SaveScript(scriptContent)
 	if err != nil {
 		return fmt.Errorf("failed to cache script: %w", err)
 	}
 
-	fmt.Printf("   📋 Script hash: %s\n", scriptHash[:16]+"...")
+	fmt.Printf("  CACHED: Script hash %s\n", scriptHash[:16]+"...")
 
 	// 5. If dry run, stop here
 	if opts.DryRun {
-		fmt.Printf("   🔍 Dry run complete - script would be executed\n")
+		fmt.Printf("  DRY RUN: Script would be executed\n")
 		return nil
 	}
 
 	// 6. Execute script
-	fmt.Printf("   ⚡ Executing script...\n")
+	fmt.Printf("  EXECUTING: Running installation script...\n")
 	version, err := i.executeScript(scriptContent)
 	if err != nil {
 		return fmt.Errorf("script execution failed: %w", err)
 	}
 
 	// 7. Save package to database
-	fmt.Printf("   💾 Saving package metadata...\n")
+	fmt.Printf("  ANCHORING: Saving package metadata...\n")
 	pkg := &database.Package{
 		Name:        packageName,
 		URL:         opts.URL,
@@ -107,8 +107,8 @@ func (i *Installer) Install(opts InstallOptions) error {
 		return fmt.Errorf("failed to save package: %w", err)
 	}
 
-	fmt.Printf("✅ Successfully installed %s %s\n", packageName, version)
-	fmt.Printf("   Use 'tira list' to see installed packages\n")
+	fmt.Printf("ANCHORED: %s %s\n", packageName, version)
+	fmt.Printf("Use 'tira list' to see installed packages\n")
 
 	return nil
 }
@@ -186,7 +186,7 @@ func (i *Installer) executeScript(scriptContent []byte) (string, error) {
 	// Check if this is a self-installation to prevent recursion
 	if strings.Contains(string(scriptContent), "tira install") &&
 		strings.Contains(string(scriptContent), "tira.sh") {
-		fmt.Printf("   🔄 Self-installation detected - executing in safe mode\n")
+		fmt.Printf("  DETECTED: Self-installation - executing in safe mode\n")
 
 		// Set environment variable to prevent nested self-installs
 		cmd := exec.Command("/bin/bash", tmpFile.Name())

@@ -51,14 +51,14 @@ func listHandler(cmd *cobra.Command, args []string) {
 	// Load config
 	cfg, err := config.Load()
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "❌ Error loading config: %v\n", err)
+		fmt.Fprintf(os.Stderr, "ERROR: Failed to load config: %v\n", err)
 		os.Exit(1)
 	}
 
 	// Initialize database
 	db, err := database.NewDatabase()
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "❌ Error initializing database: %v\n", err)
+		fmt.Fprintf(os.Stderr, "ERROR: Failed to initialize database: %v\n", err)
 		os.Exit(1)
 	}
 
@@ -79,17 +79,17 @@ func listHandler(cmd *cobra.Command, args []string) {
 
 	packages, err := db.ListPackages()
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "❌ Error listing packages: %v\n", err)
+		fmt.Fprintf(os.Stderr, "ERROR: Failed to list packages: %v\n", err)
 		os.Exit(1)
 	}
 
 	if len(packages) == 0 {
-		fmt.Println("📦 No packages installed yet")
+		fmt.Println("NO PACKAGES INSTALLED")
 		fmt.Println()
-		fmt.Println("💡 Get started with:")
-		fmt.Println("   tira install https://ollama.com/install.sh")
-		fmt.Println("   tira install https://get.docker.com")
-		fmt.Println("   tira install https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.3/install.sh")
+		fmt.Println("Get started with:")
+		fmt.Println("  tira install https://ollama.com/install.sh")
+		fmt.Println("  tira install https://get.docker.com")
+		fmt.Println("  tira install https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.3/install.sh")
 		return
 	}
 
@@ -97,7 +97,7 @@ func listHandler(cmd *cobra.Command, args []string) {
 	if len(tagFilter) > 0 {
 		packages = filterPackagesByTags(packages, tagFilter)
 		if len(packages) == 0 {
-			fmt.Printf("📦 No packages found with tags: %s\n", strings.Join(tagFilter, ", "))
+			fmt.Printf("NO PACKAGES FOUND with tags: %s\n", strings.Join(tagFilter, ", "))
 			return
 		}
 	}
@@ -106,9 +106,9 @@ func listHandler(cmd *cobra.Command, args []string) {
 	sortPackages(packages, sortBy, reverse)
 
 	// Display header
-	fmt.Printf("📦 Installed packages (%d):\n", len(packages))
+	fmt.Printf("INSTALLED PACKAGES (%d):\n", len(packages))
 	if len(tagFilter) > 0 {
-		fmt.Printf("   🏷️  Filtered by tags: %s\n", strings.Join(tagFilter, ", "))
+		fmt.Printf("  Filtered by tags: %s\n", strings.Join(tagFilter, ", "))
 	}
 	fmt.Println()
 
@@ -126,66 +126,66 @@ func listHandler(cmd *cobra.Command, args []string) {
 func displayPackage(pkg *database.Package, showHashes, showFiles, showServices, showEnv, showRollbacks bool) {
 	// Main package info
 	if showHashes {
-		fmt.Printf("  📦 %s %s (script hash: %s)\n",
+		fmt.Printf("  ▓ %s %s (script hash: %s)\n",
 			pkg.Name,
 			pkg.Version,
 			pkg.ScriptHash[:8]+"...")
 	} else {
-		fmt.Printf("  📦 %s %s\n", pkg.Name, pkg.Version)
+		fmt.Printf("  ▓ %s %s\n", pkg.Name, pkg.Version)
 	}
 
 	// Description
 	if pkg.Metadata.Description != "" {
-		fmt.Printf("     %s\n", pkg.Metadata.Description)
+		fmt.Printf("    └─ %s\n", pkg.Metadata.Description)
 	}
 
 	// Installation info
-	fmt.Printf("     🔗 %s\n", pkg.URL)
-	fmt.Printf("     📅 Installed %s (%s)\n",
+	fmt.Printf("    └─ %s\n", pkg.URL)
+	fmt.Printf("    └─ Installed %s (%s)\n",
 		formatTimeAgo(pkg.InstalledAt),
 		pkg.InstalledAt.Format("2006-01-02 15:04"))
 
 	// Tags
 	if len(pkg.Metadata.Tags) > 0 {
-		fmt.Printf("     🏷️  %s\n", strings.Join(pkg.Metadata.Tags, ", "))
+		fmt.Printf("    └─ %s\n", strings.Join(pkg.Metadata.Tags, ", "))
 	}
 
 	// Files
 	if showFiles && len(pkg.Files) > 0 {
-		fmt.Printf("     📁 Files (%d):\n", len(pkg.Files))
+		fmt.Printf("    └─ Files (%d):\n", len(pkg.Files))
 		for _, file := range pkg.Files {
-			fmt.Printf("        %s\n", file)
+			fmt.Printf("       %s\n", file)
 		}
 	}
 
 	// Services
 	if showServices && len(pkg.Services) > 0 {
-		fmt.Printf("     ⚙️  Services: %s\n", strings.Join(pkg.Services, ", "))
+		fmt.Printf("    └─ Services: %s\n", strings.Join(pkg.Services, ", "))
 	}
 
 	// Environment variables
 	if showEnv && len(pkg.Environment) > 0 {
-		fmt.Printf("     🌍 Environment:\n")
+		fmt.Printf("    └─ Environment:\n")
 		for key, value := range pkg.Environment {
-			fmt.Printf("        %s=%s\n", key, value)
+			fmt.Printf("       %s=%s\n", key, value)
 		}
 	}
 
 	// Rollback info
 	if showRollbacks && len(pkg.Rollbacks) > 0 {
-		fmt.Printf("     🔄 Rollback points (%d):\n", len(pkg.Rollbacks))
+		fmt.Printf("    └─ Rollback points (%d):\n", len(pkg.Rollbacks))
 		for i, rollback := range pkg.Rollbacks {
 			if i >= 3 { // Limit to first 3 for readability
-				fmt.Printf("        ... and %d more\n", len(pkg.Rollbacks)-3)
+				fmt.Printf("       ... and %d more\n", len(pkg.Rollbacks)-3)
 				break
 			}
-			fmt.Printf("        %s (%s) - %s\n",
+			fmt.Printf("       %s (%s) - %s\n",
 				rollback.Version,
 				rollback.ScriptHash[:8],
 				formatTimeAgo(rollback.InstalledAt))
 		}
 	} else if len(pkg.Rollbacks) > 0 {
-		fmt.Printf("     └─ %d rollback point(s) available\n", len(pkg.Rollbacks))
+		fmt.Printf("    └─ %d rollback point(s) available\n", len(pkg.Rollbacks))
 	}
 }
 

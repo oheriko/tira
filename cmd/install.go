@@ -43,7 +43,7 @@ func installHandler(cmd *cobra.Command, args []string) {
 	// Load config
 	cfgWithOverrides, err := config.Load()
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "❌ Error loading config: %v\n", err)
+		fmt.Fprintf(os.Stderr, "ERROR: Failed to load config: %v\n", err)
 		os.Exit(1)
 	}
 
@@ -67,19 +67,19 @@ func installHandler(cmd *cobra.Command, args []string) {
 
 	// Display configuration being used if verbose
 	if cmd.Flag("verbose").Changed || scriptConfig.UI.Verbose {
-		fmt.Printf("📋 Configuration:\n")
-		fmt.Printf("   Cache strategy: %s\n", scriptConfig.Cache.Strategy)
-		fmt.Printf("   Cache TTL: %v\n", scriptConfig.Cache.TTL)
-		fmt.Printf("   HTTPS verification: %t\n", scriptConfig.Security.VerifyHTTPS)
-		fmt.Printf("   Prompt on changes: %t\n", scriptConfig.Security.PromptOnChange)
+		fmt.Printf("CONFIGURATION:\n")
+		fmt.Printf("  Cache strategy: %s\n", scriptConfig.Cache.Strategy)
+		fmt.Printf("  Cache TTL: %v\n", scriptConfig.Cache.TTL)
+		fmt.Printf("  HTTPS verification: %t\n", scriptConfig.Security.VerifyHTTPS)
+		fmt.Printf("  Prompt on changes: %t\n", scriptConfig.Security.PromptOnChange)
 		if customName != "" {
-			fmt.Printf("   Custom name: %s\n", customName)
+			fmt.Printf("  Custom name: %s\n", customName)
 		}
 		if force {
-			fmt.Printf("   Force install: %t\n", force)
+			fmt.Printf("  Force install: %t\n", force)
 		}
 		if !scriptConfig.UI.ConfirmInstalls {
-			fmt.Printf("   Skip confirmations: %t\n", true)
+			fmt.Printf("  Skip confirmations: %t\n", true)
 		}
 		fmt.Println()
 	}
@@ -87,7 +87,7 @@ func installHandler(cmd *cobra.Command, args []string) {
 	// Create installer
 	inst, err := installer.NewInstaller(scriptConfig)
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "❌ Error creating installer: %v\n", err)
+		fmt.Fprintf(os.Stderr, "ERROR: Failed to create installer: %v\n", err)
 		os.Exit(1)
 	}
 
@@ -101,7 +101,7 @@ func installHandler(cmd *cobra.Command, args []string) {
 
 	// Execute installation
 	if err := inst.Install(opts); err != nil {
-		fmt.Fprintf(os.Stderr, "❌ Installation failed: %v\n", err)
+		fmt.Fprintf(os.Stderr, "ERROR: Installation failed: %v\n", err)
 		os.Exit(1)
 	}
 }
