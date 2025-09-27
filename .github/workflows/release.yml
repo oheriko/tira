@@ -29,9 +29,9 @@ jobs:
           # Windows (might as well)
           GOOS=windows GOARCH=amd64 go build -o tira-x86_64-windows.exe
           GOOS=windows GOARCH=arm64 go build -o tira-aarch64-windows.exe
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Create release
         uses: softprops/action-gh-release@v1
         with:
           files: tira-*
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
